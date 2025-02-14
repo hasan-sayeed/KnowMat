@@ -5,7 +5,7 @@ channels:
   - pytorch
   # - fastai
 dependencies:
-  - python>=3.6
+  - python==3.10.15
   - pip
   # BASICS
   - numpy
@@ -40,6 +40,13 @@ dependencies:
   - pip:
      - -e .  # install git checkout of KnowMat in editable mode
      # add here only pip-packages that are not available in conda/conda-forge! E.g.:
+     - langchain==0.3.7
+     - langchain-community==0.3.5
+     - langchain-huggingface==0.1.2
+     - pymupdf==1.24.13
+    #  - RapidFuzz==3.10.1
+     - streamlit==1.40.2
+     # pip install torch==2.5.0 torchvision==0.20.0 torchaudio==2.5.0 --index-url https://download.pytorch.org/whl/cu121
      # - icecream
      # - jax
      # - numpyro
