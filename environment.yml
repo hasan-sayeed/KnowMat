@@ -46,6 +46,8 @@ dependencies:
      - pymupdf==1.24.13
     #  - RapidFuzz==3.10.1
      - streamlit==1.40.2
+     - flask==3.1.0
+     - ollama==0.4.3
      # pip install torch==2.5.0 torchvision==0.20.0 torchaudio==2.5.0 --index-url https://download.pytorch.org/whl/cu121
      # - icecream
      # - jax
