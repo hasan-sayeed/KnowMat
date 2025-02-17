@@ -14,6 +14,7 @@ app = Flask(__name__)
 model_options = {
     "Llama 3.1 8B Instruct (Slower model)": "llama3.1:8b-instruct-fp16",
     "Llama 3.2 3B Instruct (Faster)": "llama3.2:3b-instruct-fp16",
+    "Llama 3.3 70B Instruct": "llama3.3:70b-instruct-fp16",
 }
 
 
