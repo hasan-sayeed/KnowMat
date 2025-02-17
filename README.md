@@ -9,63 +9,109 @@
 [![Twitter](https://img.shields.io/twitter/url/http/shields.io.svg?style=social&label=Twitter)](https://twitter.com/KnowMat)
 -->
 
-# KnowMat
+# **KnowMat**: Transforming Complexity into Clarity
 
-> Add a short description here!
+Figure: Schematic of the KnowMat LLM pipeline for extracting structured materials data from unstructured literature.
 
-A longer description of your project goes here...
+## Overview
+
+**KnowMat** KnowMat is an easy-to-use Flask-based web application that implements a lightweight LLM pipeline for extracting structured, machine-readable materials data from unstructured scientific literature. Built using Ollama, KnowMat streamlines the process of parsing PDFs, extracting key information—such as composition, processing conditions, characterization details, and performance properties—and saving the results in CSV format. This CSV output can then be used to build or extend a database for further analysis or machine learning applications.
+
+This system is designed to run on consumer-grade computers, making advanced data extraction accessible without requiring high-end hardware.
+
+## Features
+
+- **Automated Data Extraction**: Parse PDFs and extract material compositions, processing conditions, characterization, and performance properties.
+
+- **User-Friendly Web App**: A Flask-based interface that is simple to use yet powerful.
+
+- **Model Selection**: Supports multiple open-source models via Ollama.
+CSV Output: Easily save extraction results as a CSV file, enabling you to build or extend an existing database.
+
+- **Multiple File Upload**: Upload several PDFs at once and extend your database incrementally across sessions.
 
 ## Installation
 
-In order to set up the necessary environment:
+### Prerequisites
 
-1. review and uncomment what you need in `environment.yml` and create an environment `KnowMat` with the help of [conda]:
+1. **Ollama**:
+
+   Visit [Ollama](https://ollama.com/) to download and install the Ollama client. Launch Ollama and ensure it is running in the background.
+
+2. **Conda**:
+
+   Make sure Conda is installed on your system.
+
+### Steps
+
+1. Clone the Repository:
+
+   ```bash
+   git clone https://github.com/hasan-sayeed/KnowMat.git
+   cd KnowMat
    ```
+
+2. Create and Activate the Conda Environment:
+
+   ```bash
    conda env create -f environment.yml
-   ```
-2. activate the new environment with:
-   ```
    conda activate KnowMat
    ```
 
-> **_NOTE:_**  The conda environment will have KnowMat installed in editable mode.
-> Some changes, e.g. in `setup.cfg`, might require you to run `pip install -e .` again.
+3. Pull the Required Models from Ollama:
 
-
-Optional and needed only once after `git clone`:
-
-3. install several [pre-commit] git hooks with:
    ```bash
-   pre-commit install
-   # You might also want to run `pre-commit autoupdate`
+   ollama pull <model_name>
    ```
-   and checkout the configuration under `.pre-commit-config.yaml`.
-   The `-n, --no-verify` flag of `git commit` can be used to deactivate pre-commit hooks temporarily.
 
-4. install [nbstripout] git hooks to remove the output cells of committed notebooks with:
+   - For **Llama 3.1 8B Instruct** (medium in size ~16GB with high accuracy), use:
+
+      `llama3.1:8b-instruct-fp16` as <model_name>
+
+   - For a lighter (6.4GB) and faster model, use:
+
+      `llama3.2:3b-instruct-fp16`
+
+   - For users with strong hardware who want state-of-the-art performance, try:
+
+      `llama3.3:70b-instruct-fp16`
+
+   (Note: Llama 3.3 70B offers similar performance to the Llama 3.1 405B model but is huge in size, approximately 141GB.)
+
+4. Run the Web Application:
+
    ```bash
-   nbstripout --install --attributes notebooks/.gitattributes
+   python src/knowmat/knowmat_web_app.py
    ```
-   This is useful to avoid large diffs due to plots in your notebooks.
-   A simple `nbstripout --uninstall` will revert these changes.
 
+5. Open the App:
 
-Then take a look into the `scripts` and `notebooks` folders.
+   Open your browser and navigate to
 
-## Dependency Management & Reproducibility
-
-1. Always keep your abstract (unpinned) dependencies updated in `environment.yml` and eventually
-   in `setup.cfg` if you want to ship and install your package via `pip` later on.
-2. Create concrete dependencies as `environment.lock.yml` for the exact reproduction of your
-   environment with:
    ```bash
-   conda env export -n KnowMat -f environment.lock.yml
+   http://127.0.0.1:5000.
    ```
-   For multi-OS development, consider using `--no-builds` during the export.
-3. Update your current environment with respect to a new `environment.lock.yml` using:
-   ```bash
-   conda env update -f environment.lock.yml --prune
-   ```
+
+
+## Usage
+
+- **Model Selection:**
+
+   On the left pane of the web app, choose your preferred model from the dropdown menu. **Before choosing a model, make sure you have pulled the required model from Ollama following the instructions above.**
+
+- **File Upload:**
+
+   You can upload multiple PDF files at once using the file uploader in the sidebar.
+
+- **CSV Output:**
+
+   Specify the output folder path and the CSV file name where the extracted data will be saved. If you use the same path and CSV file name in multiple sessions, KnowMat will append the new extraction results to your existing database, allowing you to extend your dataset over time.
+
+- **View Results:**
+
+   The right pane displays the extracted data for each PDF one by one as soon as extraction for that file is completed.
+
+
 ## Project Organization
 
 ```
@@ -105,6 +151,20 @@ Then take a look into the `scripts` and `notebooks` folders.
 ├── .isort.cfg              <- Configuration for git hook that sorts imports.
 └── .pre-commit-config.yaml <- Configuration of pre-commit git hooks.
 ```
+
+## 🚀 Future Enhancements
+
+- [ ] **Additional Model Support**: Expand the list of supported models and allow for custom model integration.
+
+- [ ] **Advanced Post-Processing**: Further refine extraction accuracy using additional custom prompts and techniques.
+
+- [ ] **Enhanced UI/UX**: Improve the Flask web interface for a more seamless and responsive user experience.
+
+- [ ] **Evaluation of Extracted Outputs**: Integrate evaluation metrics into the pipeline to assess the quality and accuracy of the extracted data, ensuring robust performance in real-world applications.
+
+## Feedback
+
+We truly value your input and are excited to hear your feedback and suggestions! If you have any ideas for improvements, feature requests, or if you encounter any issues, please feel free to open an issue on our GitHub repository. We're always eager to collaborate, so if you're interested in contributing, reach out to our developers. Your insights help us make KnowMat even better!
 
 <!-- pyscaffold-notes -->
 
