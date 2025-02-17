@@ -89,7 +89,7 @@ CSV Output: Easily save extraction results as a CSV file, enabling you to build 
    Open your browser and navigate to
 
    ```bash
-   http://127.0.0.1:5000.
+   http://127.0.0.1:5000
    ```
 
 
