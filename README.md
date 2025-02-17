@@ -11,7 +11,9 @@
 
 # **KnowMat**: Transforming Complexity into Clarity
 
-Figure: Schematic of the KnowMat LLM pipeline for extracting structured materials data from unstructured literature.
+![KnowMat-logo](docs/_static/KnowMat-logo.jpg)
+
+*Figure: Schematic of the KnowMat LLM pipeline for extracting structured materials data from unstructured literature.*
 
 ## Overview
 
