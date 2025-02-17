@@ -1,4 +1,3 @@
-from src.knowmat.generate_allowed_properties import AllowedPropertiesGenerator
 from src.knowmat.pdf_parser import PDFParser
 from src.knowmat.pipeline import Pipeline
 
@@ -9,7 +8,7 @@ class JSONExtractor:
     """
 
     @staticmethod
-    def extract(folder_path: str, properties_file: str) -> list:
+    def extract(folder_path: str, model: str) -> list:
         """
         Extract data from PDF files in a folder.
 
@@ -20,15 +19,12 @@ class JSONExtractor:
         Returns:
             list: A list of extracted data in JSON-compatible format.
         """
-        allowed_properties = AllowedPropertiesGenerator.generate_allowed_properties(
-            properties_file
-        )
         parsed_pdfs = PDFParser.parse_folder(folder_path)
 
         extracted_data = []
         for pdf in parsed_pdfs:
             try:
-                data = Pipeline.run_pipeline(pdf["text"], allowed_properties)
+                data = Pipeline.run_pipeline(pdf["text"], model)
                 extracted_data.append({"file_name": pdf["file_name"], "data": data})
             except Exception as e:
                 print(f"Error extracting data from {pdf['file_name']}: {e}")

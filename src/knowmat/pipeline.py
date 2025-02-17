@@ -1,9 +1,8 @@
 from typing import List, Optional
 
 from ollama import chat
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field
 
-from src.knowmat.generate_allowed_properties import AllowedPropertiesGenerator
 from src.knowmat.prompt_generator import PromptGenerator
 
 
@@ -14,24 +13,24 @@ class Property(BaseModel):
     value: float = Field(description="Numerical value of the property.")
     unit: str = Field(description="Measurement unit of the property.")
     measurement_condition: Optional[str] = Field(
-        default=None,
+        # default=None,
         description="Conditions under which the property was measured (e.g., temperature, pressure).",
     )
     additional_information: Optional[str] = Field(
-        default=None,
+        # default=None,
         description="Any additional context related to this property, such as anisotropy details.",
     )
 
-    @field_validator("property_name")
-    def validate_property_name(cls, value):
-        allowed_properties = AllowedPropertiesGenerator.generate_allowed_properties(
-            "src/knowmat/properties.json"
-        )
-        if value.lower() not in allowed_properties:
-            raise ValueError(
-                f"Invalid property_name: {value}. Allowed properties are: {', '.join(allowed_properties)}"
-            )
-        return value
+    # @field_validator("closest_property_name")
+    # def validate_property_name(cls, value):
+    #     allowed_properties = AllowedPropertiesGenerator.generate_allowed_properties(
+    #         "src/knowmat/properties.json"
+    #     )
+    #     if value.lower() not in allowed_properties:
+    #         raise ValueError(
+    #             f"Invalid property_name: {value}. Allowed properties are: {', '.join(allowed_properties)}"
+    #         )
+    #     return value
 
 
 class CompositionProperties(BaseModel):
@@ -39,11 +38,11 @@ class CompositionProperties(BaseModel):
 
     composition: str = Field(description="The chemical composition of the material.")
     processing_conditions: Optional[str] = Field(
-        default="not provided",
+        # default="not provided",
         description="Processing conditions applied to the material.",
     )
     characterization: Optional[dict[str, str]] = Field(
-        default_factory=dict,
+        # default_factory=dict,
         description="Characterization techniques and their findings.",
     )
     properties_of_composition: List[Property] = Field(
@@ -66,7 +65,8 @@ class Pipeline:
 
     @staticmethod
     def run_pipeline(
-        text: str, allowed_properties: list, model: str = "llama3.1:8b-instruct-q4_0"
+        text: str,
+        model: str = "llama3.1:8b-instruct-fp16",  # "llama3.2:3b-instruct-fp16" # "llama3.1:8b-instruct-q4_0"
     ) -> CompositionList:
         """
         Run the LLM pipeline with the given text and allowed properties.
@@ -79,7 +79,7 @@ class Pipeline:
         Returns:
             CompositionList: Extracted data validated with Pydantic.
         """
-        system_prompt = PromptGenerator.generate_system_prompt(allowed_properties)
+        system_prompt = PromptGenerator.generate_system_prompt()
         user_prompt = PromptGenerator.generate_user_prompt(text)
 
         # print("system prompt", system_prompt)
