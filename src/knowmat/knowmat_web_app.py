@@ -126,6 +126,22 @@ def index():
         .extract-btn:hover {
           background: #45a049;
         }
+        /* Spinner CSS */
+        .spinner {
+          border: 4px solid #f3f3f3; /* Light gray */
+          border-top: 4px solid #3498db; /* Blue */
+          border-radius: 50%;
+          width: 16px;
+          height: 16px;
+          animation: spin 1s linear infinite;
+          display: inline-block;
+          vertical-align: middle;
+          margin-right: 5px;
+        }
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
       </style>
     </head>
     <body>
@@ -187,26 +203,25 @@ def index():
             return;
           }
 
-          // We'll process each file in a loop, making one request per file.
-          // This way, we can show partial results as we go.
+          // Process each file in a loop, making one request per file.
           for (let i = 0; i < pdfFiles.length; i++) {
             const file = pdfFiles[i];
             const fileName = file.name;
 
-            // 1) Show a waiting message for this file
+            // 1) Show a waiting message for this file with a spinner.
             const waitingDiv = document.createElement('div');
             waitingDiv.classList.add('waiting-msg');
-            waitingDiv.innerHTML = `⏳ Waiting for LLM to extract data from <b>${fileName}</b>...`;
+            waitingDiv.innerHTML = `<span class="spinner"></span> Waiting for LLM to extract data from <b>${fileName}</b>...`;
             bottomRight.appendChild(waitingDiv);
 
-            // 2) Build form data for this single file
+            // 2) Build form data for this single file.
             const formData = new FormData();
             formData.append('selected_model', selectedModel);
             formData.append('output_path', outputPath);
             formData.append('output_file_name', outputFileName);
             formData.append('pdf', file); // single file
 
-            // 3) Make request to server
+            // 3) Make request to server.
             try {
               const response = await fetch('/extract_one', {
                 method: 'POST',
@@ -214,27 +229,25 @@ def index():
               });
               const resultHTML = await response.text();
 
-              // 4) Replace the waiting message with the final results
-              waitingDiv.remove(); // remove the waiting message
+              // 4) Replace the waiting message with the final results.
+              waitingDiv.remove(); // remove waiting message
 
-              // Insert the results
+              // Insert the results.
               const resultContainer = document.createElement('div');
               resultContainer.innerHTML = resultHTML;
               bottomRight.appendChild(resultContainer);
 
             } catch (err) {
-              // Remove waiting message
               waitingDiv.remove();
-              // Show error
               const errorDiv = document.createElement('div');
               errorDiv.classList.add('error-msg');
               errorDiv.innerHTML = `❌ Error processing ${fileName}: ${err.message}`;
               bottomRight.appendChild(errorDiv);
-              return; // or continue to next file
+              return;
             }
           }
 
-          // Finally, once all files are done:
+          // All files processed:
           const doneMsg = document.createElement('div');
           doneMsg.classList.add('success-msg');
           doneMsg.textContent = "✅ Data extraction completed!";
@@ -267,12 +280,12 @@ def extract_one():
     results_html = ""
 
     try:
-        # 1) Create temp folder for each file
+        # 1) Create temp folder for each file.
         temp_root = "temp_pdfs"
         if not os.path.exists(temp_root):
             os.makedirs(temp_root, exist_ok=True)
 
-        # Each file in its own subfolder
+        # Each file in its own subfolder.
         temp_folder = os.path.join(temp_root, os.path.splitext(file_name)[0])
         if os.path.exists(temp_folder):
             shutil.rmtree(temp_folder)
@@ -282,39 +295,40 @@ def extract_one():
         with open(file_path, "wb") as f:
             f.write(file.read())
 
-        # 2) Extract with your LLM logic
+        # 2) Extract with your LLM logic.
         model_name = model_options.get(selected_model_key, "")
         extracted_result = JSONExtractor.extract(temp_folder, model_name)
 
-        # 3) Save to CSV
+        # 3) Save to CSV.
         extracted_data_file = os.path.join(output_path, output_file_name)
         ResponseParser.save_to_csv(extracted_result, output_path, output_file_name)
 
-        # 4) Post-process
+        # 4) Post-process (update CSV) and update JSON with new keys.
         processor = PostProcessor("src/knowmat/properties.json", extracted_data_file)
         processor.process_extracted_data()
+        extracted_result = processor.update_extracted_json(extracted_result)
 
-        # 5) Build HTML for the results
+        # 5) Build HTML for the results, now including new keys after property_name.
         results_html += f"<h3>📄 File: {file_name}</h3>"
         for composition in extracted_result[0]["data"].compositions:
             composition_dict = {
                 "composition": composition.composition,
                 "processing_conditions": composition.processing_conditions,
                 "characterization": composition.characterization,
-                "properties": [
-                    {
-                        "property_name": prop.property_name,
-                        "value": prop.value,
-                        "unit": prop.unit,
-                        "measurement_condition": prop.measurement_condition,
-                    }
-                    for prop in composition.properties_of_composition
-                ],
+                "properties": [],
             }
-            composition_json = json.dumps(
-                composition_dict, indent=2, ensure_ascii=False
-            )
-            results_html += f"<pre>{composition_json}</pre>"
+            for prop in composition.properties_of_composition:
+                prop_dict = {
+                    "property_name": prop.property_name,
+                    "value": prop.value,
+                    "unit": prop.unit,
+                    "measurement_condition": prop.measurement_condition,
+                    "standard_property_name": prop.standard_property_name,
+                    "category": prop.category,
+                    "domain": prop.domain,
+                }
+                composition_dict["properties"].append(prop_dict)
+            results_html += f"<pre>{json.dumps(composition_dict, indent=2, ensure_ascii=False)}</pre>"
 
         return results_html
 
