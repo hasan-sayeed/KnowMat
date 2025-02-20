@@ -30,6 +30,8 @@ class ResponseParser:
                         [
                             entry["file_name"],  # Store file name for reference
                             comp.composition,
+                            comp.processing_conditions,  # Processing conditions
+                            comp.characterization,
                             prop.property_name,
                             prop.value,
                             prop.unit,
@@ -41,12 +43,14 @@ class ResponseParser:
         new_data_df = pd.DataFrame(
             rows,
             columns=[
-                "File Name",
-                "Composition",
-                "Property Name",
-                "Value",
-                "Unit",
-                "Measurement Condition",
+                "file name",
+                "composition",
+                "processing condition",
+                "characterization",
+                "property name",
+                "value",
+                "unit",
+                "measurement condition",
             ],
         )
 

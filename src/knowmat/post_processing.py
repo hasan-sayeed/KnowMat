@@ -95,15 +95,13 @@ class PostProcessor:
         extracted_df = pd.read_csv(self.extracted_data_file)
 
         # Ensure the necessary column exists
-        if "Property Name" not in extracted_df.columns:
-            raise ValueError(
-                "The 'Property Name' column is missing in extracted_data.csv"
-            )
+        if "property name" not in extracted_df.columns:
+            raise ValueError("The 'property name' column is missing in extracted data")
 
         # Apply matching function and update the DataFrame with new columns: domain,
         # category, standard_property_name
         extracted_df[["domain", "category", "standard_property_name"]] = extracted_df[
-            "Property Name"
+            "property name"
         ].apply(lambda x: pd.Series(self.find_closest_property(x)))
 
         # Save the updated DataFrame back to the same file
