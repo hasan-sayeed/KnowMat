@@ -48,6 +48,10 @@ dependencies:
      - streamlit==1.40.2
      - flask==3.1.0
      - ollama==0.4.3
+    #  - spacy==3.8.4
+    #  - fuzzywuzzy==0.18.0
+    #  - python-Levenshtein==0.26.1
+     - sentence-transformers==3.3.1
      # pip install torch==2.5.0 torchvision==0.20.0 torchaudio==2.5.0 --index-url https://download.pytorch.org/whl/cu121
      # - icecream
      # - jax
