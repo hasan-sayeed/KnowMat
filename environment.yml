@@ -8,7 +8,7 @@ dependencies:
   - python==3.10.15
   - pip
   # BASICS
-  - numpy
+  - numpy==1.26.4
   - scipy
   - pandas
   - tqdm
